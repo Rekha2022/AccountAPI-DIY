@@ -57,8 +57,8 @@ output application/json
 	</flow>
 	<flow name="getAccountsByID" doc:id="d0007255-6248-4983-98fb-87b3de98e053" >
 		<db:select doc:name="Select" doc:id="2c050a8a-e9b2-49ce-af8e-dde4f1ccde89" config-ref="Database_Config">
-			<db:sql ><![CDATA[SELECT * FROM flights_customers  WHERE accountId = :ID]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{"ID": attributes.uriParams.'ID'}]]]></db:input-parameters>
+			<db:sql ><![CDATA[SELECT * FROM flights_customers  WHERE accountId = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{"id": attributes.uriParams.'id'}]]]></db:input-parameters>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="afff9468-9923-464f-ab52-adbf93c99236" >
 			<ee:message >

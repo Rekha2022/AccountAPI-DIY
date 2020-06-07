@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_TestListener_config" doc:name="HTTP Listener config" doc:id="0855f8db-1f67-4b32-ac4a-2ca3e31002c1" >
+		<http:listener-connection host="0.0.0.0" port="9092" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7563bf66-1430-4f71-81c6-2982c21c7cc5" basePath="/api" >
+		<http:request-connection host="0.0.0.0" port="8081" />
+	</http:request-config>
+	<flow name="GETTestAllAccounts" doc:id="16a27a44-7871-49e1-bb09-a3b7ffa6b60e" >
+		<http:listener doc:name="GetTestAllAccounts" doc:id="249c2b88-f67c-46bb-aa8e-6447ddbde79b" config-ref="HTTP_TestListener_config" path="/GetTestAllAccounts" allowedMethods="GET"/>
+		<http:request method="GET" doc:name="Request" doc:id="a98b5bf2-1d4a-40a8-ad75-6a0e24b00eec" config-ref="HTTP_Request_configuration" path="/accounts">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"type" : "business"
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+	<flow name="GETTestOneAccount" doc:id="2a9b77bf-1df9-4ceb-98bf-8b1254b431c7" >
+		<http:listener doc:name="GetTestOneAccount" doc:id="a7d07330-d081-4c5c-904c-ce678e420442" config-ref="HTTP_TestListener_config" path="/GetTestOneAccount" allowedMethods="GET"/>
+		<set-variable value="#[message.attributes.queryParams.code]" doc:name="Set Variable" doc:id="1fa0f8eb-a79b-4884-9a3f-3dad5c6803fd" variableName="code"/>
+		<http:request method="GET" doc:name="Request" doc:id="9554b3bb-5c3f-43b1-970b-82d278f15c0a" config-ref="HTTP_Request_configuration" path="/accounts/{id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.code
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+	<flow name="PUTTestAccount" doc:id="d8363f6c-ddf3-45fa-a340-793f9b28772b" >
+		<http:listener doc:name="PutTestAccounts" doc:id="f7efde05-cb16-40db-8e3a-98c2b0d0c733" config-ref="HTTP_TestListener_config" path="/PutTestAccounts"/>
+		<set-payload value='#[output application/json
+---
+{"message": "Account replaced (but not really)"}]' doc:name="Set Payload" doc:id="09c3cd4c-8129-4b30-8502-074336468de0" />
+		<http:request method="PUT" doc:name="Request" doc:id="458e36a1-ae4f-4ed6-81e3-b4e6b8d6c617" config-ref="HTTP_Request_configuration" path="/accounts/{id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : "4400"
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+	<flow name="POSTTestAccount" doc:id="54cdc4e6-5e62-4134-8eeb-0e80fb32683c" >
+		<http:listener doc:name="PostTestAccounts" doc:id="a99efde4-afdc-484a-a39d-4f08d10b6dbc" config-ref="HTTP_TestListener_config" path="/PostTestAccount" allowedMethods="POST"/>
+		<set-payload value='#[output application/json
+---
+{
+	firstName: "John",
+    lastName: "Smith",
+    address: "1002 Main Street, Springfield TX",
+    postal: "77002",
+    country: "USA",
+    accountType: "personal",
+    miles: 8492
+      
+}]' doc:name="Set Payload" doc:id="ffb81bf9-c0ee-4df5-ab5b-f4f0701a2292" />
+		<http:request method="GET" doc:name="Request" doc:id="9221b2a5-2965-4087-8a0c-4a040ab6f5a6" config-ref="HTTP_Request_configuration" path="/accounts">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="PATCHTestAccount" doc:id="236f20b6-80ed-4faf-a2cd-8fe133ccab9d" >
+		<http:listener doc:name="PatchTestAccount" doc:id="e0df16ec-e1fc-4a2f-be0c-fbb90f3f8aa8" config-ref="HTTP_TestListener_config" path="/PatchTestAccounts"/>
+		<set-payload value='#[output application/json
+---
+{"message": "Account modified (but not really)"}]' doc:name="Set Payload" doc:id="2239c35d-bc29-4c4e-8740-c774740170fe" />
+		<http:request method="GET" doc:name="Request" doc:id="8b84d88e-bd00-4634-9f77-48d2f1840001" config-ref="HTTP_Request_configuration" path="/accounts/{ID}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"ID" : "2"
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"type" : "business"
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+	<flow name="DELETETestAccount" doc:id="f348440d-d4b0-4468-9638-e46cf77472ab" >
+		<http:listener doc:name="DeleteTestAccounts" doc:id="d8401fd6-f584-43c0-9213-40dc00629c40" config-ref="HTTP_TestListener_config" path="/DeleteTestAccounts"/>
+		<set-payload value='#[output application/json
+---
+{"message": "Account deleted (but not really)"}]' doc:name="Set Payload" doc:id="f0af28d4-b2ce-45a1-a7a7-7bd03a3b5883" />
+		<http:request method="GET" doc:name="Request" doc:id="6d1612db-2db6-4acf-b9c2-b445a93f2f8c" config-ref="HTTP_Request_configuration" path="/accounts/{ID}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Requester-ID" : "Test"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"ID" : "2"
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+</mule>
